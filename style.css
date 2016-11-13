@@ -1,0 +1,50 @@
+html {
+  background: url(images/index_background.jpeg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+body {
+  font: 16px "Lucida Sans Unicode";
+}
+
+.login-content {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 25px;
+  max-width: 250px;
+  margin:auto;
+  margin-top: 15%;
+  padding: 5px;
+  text-align: center;
+}
+
+.login-content h2 {
+  text-align: center;
+  font-weight: bold;
+}
+
+.login_form label {
+  display: block;
+  font-size: 14px;
+}
+
+.login_form input {
+  display: inline-block;
+
+}
+
+.login_form input[type="submit"]{
+  margin-top: 15px;
+  font-size: large;
+}
+
+footer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    text-align: center;
+}
