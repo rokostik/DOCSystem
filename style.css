@@ -14,7 +14,7 @@ body {
   background: rgba(255, 255, 255, 0.7);
   border-radius: 25px;
   max-width: 250px;
-  margin:auto;
+  margin: auto;
   margin-top: 15%;
   padding: 5px;
   text-align: center;
@@ -28,16 +28,34 @@ body {
 .login_form label {
   display: block;
   font-size: 14px;
+  margin-top: 10px;
 }
 
 .login_form input {
   display: inline-block;
+}
 
+.login_form input[type="text"], input[type="password"]{
+  border: solid 1px;
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 3px;
+  margin-bottom: 15px;
 }
 
 .login_form input[type="submit"]{
-  margin-top: 15px;
   font-size: large;
+  width: 70px;
+  height: 40px;
+}
+
+::-webkit-input-placeholder {
+  font-weight: lighter;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  font-weight: lighter;
+  opacity:  1;
 }
 
 footer {
