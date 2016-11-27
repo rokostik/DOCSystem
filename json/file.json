@@ -1,0 +1,16 @@
+{
+    "folder":"Vacation",
+    "name":"super_cool_image.jpg",
+    "tags":[
+        {
+            "tag":"cool"
+        },
+        {
+            "tag":"vacation"
+        },
+        {
+            "tag":"fun"
+        }
+    ],
+    "image":"super_cool_image.jpg"
+}

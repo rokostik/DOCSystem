@@ -10,15 +10,16 @@
 
 <body class="main-container">
     <header>
+        <span><img src="images/hamburger.png" id="hamburger" onclick="showNavigation()"/> </span>
         <span class="title">DOCSystem</span>
-        <span><input placeholder="search"></input></span>
+        <span><input placeholder="search" /></span>
         <span><a id="user" href="#">Rok Sušnik</a></span>
     </header>
     <div class="content-container">
         <aside>
             <ul>
                 <li>
-                    <a href="dashboard_files.html">Vacation</a>
+                    <a onclick="showFolder()">Vacation</a>
                 </li>
                 <li>
                     <a href="#">Birthday party</a>
@@ -36,29 +37,15 @@
                     <a href="#">School project</a>
                 </li>
                 <li>
-                    <a href="#"><img src="images/plus_folder.png">Add a folder</a>
+                    <a onclick="addFolder()"" id="addFolder"><img src="images/plus_folder.png" alt="add folder" ">Add a folder</a>
                 </li>
             </ul>
         </aside>
-        <div class="main">
-            <div class="main-top new-file-heading">
-                <h1><a href="dashboard_document">Vacation</a> / New file</h1>
-            </div>
-            <div class="new-file">
-                <form action="dashboard_files.html">
-                    <label>Select file:<input type="file" name="file" id="upload" onchange="onFileSelect(event);" required></label>
-                    <label>Name:<input name="file_name" id="fileName" required/></label>
-                    <label class="tags main-tags">Tags:<a href="#" onclick="addTag(event)" id="addTag"> +Add tag</a></label>
-                    <label>I am not a robot <input type="checkbox" required/></label>
-                    <label><input type="submit"/ value="Upload"></label>
-                </form>
-            </div >
+        <div class="main" id="main">
+
         </div>
     </div>
     <footer>
         &copy; Rok Sušnik
     </footer>
-    <div id="popup">
-
-    </div>
 </body>

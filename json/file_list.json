@@ -1,0 +1,29 @@
+{
+    "sharedWith":[
+        {
+            "name":"Arthur Dent"
+        }
+    ],
+    "files":[
+        {
+            "fileName":"super_cool_image.jpg",
+            "changed":"27.11.2016"
+        },
+        {
+            "fileName":"fun_times.jpg",
+            "changed":"18.01.2016"
+        },
+        {
+            "fileName":"summer_joy.jpg",
+            "changed":"05.06.2014"
+        },
+        {
+            "fileName":"best_day_ever.jpg",
+            "changed":"15.03.2012"
+        },
+        {
+            "fileName":"mountain_hiking.jpg",
+            "changed":"15.03.2012"
+        }
+    ]
+}
