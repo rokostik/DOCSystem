@@ -1,6 +1,6 @@
 #DOCSystem :open_file_folder: :cloud:
 
-The DOCSystem web application supports these awesome use cases:
+The DOCSystem web application supports these awesome use features:
 * Add folders
 * Add documents (all from pictures to PDF files)
 * The system tracks when you made changes to a document
