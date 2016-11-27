@@ -4,21 +4,21 @@
     <title>Dokumentni sistem</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 
 <body>
     <div class="login-content">
-      <h2>Prijava v sistem</h2>
-      <form class="login_form" method="post" action="/login">
-        <input type="text" name="username" placeholder="Uporabniško ime" required />
-        <input type="password" name="password" placeholder="Geslo" required />
-        <label><input type="submit" value="Prijava"/></label>
-        <p class="pozabil_geslo">
-          <a href="#">Pozabljeno geslo?</a>
+      <h2>Login to DOCSystem</h2>
+      <form class="login_form" method="post" action="./dashboard_files.html">
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <label><input type="submit" value="Login"/></label>
+        <p>
+          <a href="#">Forgot password?</a>
         </p>
-        <p class="nov_uporabnik">
-          Nov uporabnik? <a href="#">Registriraj se!</a>
+        <p>
+          Don't have an account? <a href="#">Register!</a>
         </p>
       </form>
     </div>
