@@ -1,13 +1,12 @@
-# Dokumentni-sistem :open_file_folder: :cloud:
+#DOCSystem :open_file_folder: :cloud:
 
-Spletna aplikacija podpira naslednjo delovanje:
-* Skenirani dokument se doda v spletno aplikacijo, takrat se mu doda tip, datum skeniranja in druge meta podatke.
-* Mogoče je dodajati nove tipe dokumentov.
-* Vsaka sprememba ali dodatek metapodatkov k dokumentu se zabeleži in prikaže skupaj z dokumentom.
-* Zabeleži se treba tudi dostop do dokumentov.
-* Za vsak tip dokumenta lahko določimo pravice - kdo ima dostop, kdo lahko ureja metapodatke, ...
-* Za vsak tip dokumenta je mogoče določiti proces potrjevanja. Npr. vsak račun mora potrditi direktor, šele nato ga vidijo v računovodstvu, prošnjo za izdajo potnega naloga ali za dopust pa mora odobriti neposredni nadrejeni.
+The DOCSystem web application supports these awesome use cases:
+* Add folders
+* Add documents (all from pictures to PDF files)
+* The system tracks when you made changes to a document
+* Share folders with your friends or family
+* Add custom tags to documents
 
-Namenjena je vseh uporabnikom, ki bi si delo z dokumenti radi olajšali s sistemom, kjer imajo vse dokumente dostopne kjerkoli!
+If you ever lost any important documents and cried in a corner, say no more! The DOCSystem has got you covered from now on with a state of the art backup system with 99.5% availability.
 
-Podprta je na mobilnih in desktop napravah.
+Access to the system is possible from all web consuming electronics which include PCs, tablets, smartphones.
