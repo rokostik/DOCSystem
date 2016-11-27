@@ -10,10 +10,11 @@
 
 <body class="main-container">
     <header>
-        <span><img src="images/hamburger.png" id="hamburger" onclick="showNavigation()"/> </span>
+        <span><img src="images/hamburger.png" id="hamburger" onclick="showNavigation()" alt="hamburger"/> </span>
         <span class="title">DOCSystem</span>
         <span><input placeholder="search" /></span>
-        <span><a id="user" href="#">Rok Sušnik</a></span>
+        <span id="user">Rok Sušnik</span>
+        <span><a id="header_logout" href="index.html">Logout</a></span>
     </header>
     <div class="content-container">
         <aside>
@@ -37,7 +38,10 @@
                     <a href="#">School project</a>
                 </li>
                 <li>
-                    <a onclick="addFolder()"" id="addFolder"><img src="images/plus_folder.png" alt="add folder" ">Add a folder</a>
+                    <a onclick="addFolder()" id="addFolder"><img src="images/plus_folder.png" alt="add folder">Add a folder</a>
+                </li>
+                <li>
+                    <a href="index.html" id="aside_logout">Logout</a>
                 </li>
             </ul>
         </aside>

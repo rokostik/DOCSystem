@@ -43,17 +43,18 @@ body {
   margin-bottom: 15px;
 }
 
-.login_form input[type="submit"]{
+.login_form input[type="submit"], input[type="button"]{
   font-size: large;
   width: 70px;
   height: 40px;
+  margin: 0 0.3em 1em 0.3em;
 }
 
 ::-webkit-input-placeholder {
   font-weight: lighter;
 }
 
-::-moz-placeholder { /* Mozilla Firefox 19+ */
+::-moz-placeholder {
   font-weight: lighter;
   opacity:  1;
 }

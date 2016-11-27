@@ -57,7 +57,7 @@ function showFile(event) {
 }
 
 function showFolder(event) {
-    var mq = window.matchMedia("(max-width: 550px)");
+    var mq = window.matchMedia("(max-width: 620px)");
     if(mq.matches){
         showNavigation();
     }
@@ -119,7 +119,7 @@ function newFile(event) {
         '<h1><a href="dashboard_document">Vacation</a> / New file</h1>'+
     '</div>'+
     '<div class="new-file">'+
-        '<form action="dashboard_files.html">'+
+        '<form action="dashboard.html">'+
             '<label>Select file:<input type="file" name="file" id="upload" onchange="onFileSelect(event);" required></label>'+
             '<label>Name:<input name="file_name" id="fileName" required/></label>'+
             '<label class="tags main-tags">Tags:<a href="#" onclick="addTag(event)" id="addTag"> +Add tag</a></label>'+
@@ -163,6 +163,10 @@ function showNavigation() {
         nav.style.minWidth = "100%";
         nav.style.minHeight = "100%";
     }
+}
+
+function logout() {
+    window.location.pathname = "index.html";
 }
 
 document.addEventListener("DOMContentLoaded", function() {
