@@ -71,22 +71,21 @@ function showFolder(event) {
         '<div class="main-top">'+
             '<h1>Vacation</h1>'+
             '<a href="#"> <img src="images/share.png" title="Share file" onclick="shareFile()" /> </a>'+
-        '</div>'+
+        '</div>';
 
-        '<div class="main-shared-with">'+
+        var shareData =
+        '<div class="main-shared-with" id="sharedWith">'+
             '<span>Shared with: </span>';
 
             for(var i in json.sharedWith){
-                main.innerHTML += '<span>';
+                shareData += '<span>';
                 if(i != 0){
-                    main.innerHTML += ', '
+                    shareData += ', '
                 }
-                main.innerHTML += json.sharedWith[i].name + '</span>';
+                shareData += json.sharedWith[i].name + '</span>';
             }
-
+            shareData += '</div>';
         var tData =
-        '</div>'+
-
         '<div class="files">'+
             '<table>'+
                 '<thead>'+
@@ -109,7 +108,7 @@ function showFolder(event) {
             '</table>'+
         '</div>';
 
-        main.innerHTML += tData;
+        main.innerHTML += shareData + tData;
     });
 }
 
@@ -145,11 +144,11 @@ function addFolder(event) {
 function shareFile(event) {
     var name = prompt("Please the person you want to share with", "");
     if (name != null && name != "") {
-        var folderLink = document.getElementById('addFolder');
+        var list = document.getElementById('sharedWith');
 
-        var listItem = document.createElement('li');
-            listItem.innerHTML = '<a href="#">' + name + '</a>';
-        folderLink.parentNode.parentNode.insertBefore(listItem, folderLink.parentNode);
+        var span = document.createElement('span');
+            span.innerHTML = '<span>, ' + name + '</span>';
+        list.lastChild.appendChild(span);
 
     }
 }
