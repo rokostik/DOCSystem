@@ -93,6 +93,25 @@ header span.title {
     transition: 0.5s;
 }
 
+.new-file-heading h1 {
+    margin-right: 0;
+}
+
+.new-file .tags {
+    float: left;
+    font-size: 1em;
+
+}
+
+.new-file .tags a {
+    margin-left: 1em;
+}
+
+.new-file input[type="submit"] {
+    background-color: royalblue;
+    color: white;
+}
+
 .main-tags{
     display: flex;
     font-size: 0.8em;
@@ -110,6 +129,22 @@ header span.title {
 .main-image-container img {
     max-width: 100%;
     height: auto;
+}
+
+.main input {
+        border: solid 1px;
+        border-radius: 5px;
+        font-weight: lighter;
+        width: 30vw;
+        font-size: 1em;
+        margin-left: 2em;
+}
+
+.main label {
+    float:right;
+    clear:both;
+    margin-bottom: 2em;
+    text-align: right;
 }
 
 .files table {
