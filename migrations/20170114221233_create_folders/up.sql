@@ -1,0 +1,5 @@
+CREATE TABLE folders (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id),
+  name VARCHAR NOT NULL
+)
