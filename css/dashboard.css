@@ -156,7 +156,7 @@ header a {
 
 .files thead tr th {
     border-bottom: 2px solid grey;
-    border-collapse: collapse;;
+    border-collapse: collapse;
     font-weight: lighter;
     opacity: 0.7;
 }
