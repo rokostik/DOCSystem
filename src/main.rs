@@ -68,20 +68,37 @@ fn register(user_new: Form<UserNew>) -> Redirect {
 }
 
 #[get("/")]
-fn dashboard(cookies: &Cookies) -> Result<Template, Redirect> {
+fn dashboard(cookies: &Cookies) -> Redirect {
     if let Ok(user_id) = get_id_from_session(&cookies) {
         let user: User = User::get(user_id);
-        println!("ole ole");
-        Ok(Template::render("dashboard_folder", &Context::folder_view(user_id, "test".to_string())))
+        let folders: Vec<Folder> = (&user).get_folders();
+        let ref folder_name = folders[0].name;
+        Redirect::to(&format!("/{}", folder_name))
+    } else {
+        Redirect::to("/login")
+    }
+}
+
+#[get("/<folder_name>")]
+fn show_folder(cookies: &Cookies, folder_name: &str) -> Result<Template, Redirect> {
+    if let Ok(user_id) = get_id_from_session(&cookies) {
+        let user: User = User::get(user_id);
+        Ok(Template::render("dashboard_folder", &Context::folder_view(user_id, folder_name.to_string())))
     } else {
         Err(Redirect::to("/login"))
     }
 }
 
+#[error(404)]
+fn not_found(req: &rocket::Request) -> String {
+    format!("<p>'{}' was not found</p>", req.uri())
+}
+
 fn main() {
-    rocket::ignite().mount("/", routes![dashboard, static_files::all])
+    rocket::ignite().mount("/", routes![dashboard, show_folder, static_files::all])
                     .mount("/login", routes![login, show_login])
                     .mount("/register", routes![register, show_register])
                     .mount("/logout", routes![logout])
+                    .catch(errors![not_found])
                     .launch();
 }

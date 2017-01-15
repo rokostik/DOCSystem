@@ -20,34 +20,13 @@
     <div class="content-container">
         <aside>
             <ul>
-              <!--
-                <li>
-                    <a onclick="showFolder()">Vacation</a>
-                </li>
-                <li>
-                    <a href="#">Birthday party</a>
-                </li>
-                <li>
-                    <a href="#">Saturday night</a>
-                </li>
-                <li>
-                    <a href="#">Family</a>
-                </li>
-                <li>
-                    <a href="#">Friends</a>
-                </li>
-                <li>
-                    <a href="#">School project</a>
-                </li>
-                !-->
                 {% if folders %}
                   {% for folder in folders %}
                     <li>
-                      <a href="#">{{ folder.name }}</a>
+                      <a href="{{ folder.name }}">{{ folder.name }}</a>
                     </li>
                   {% endfor %}
                 {% endif %}
-
                 <li>
                     <a onclick="addFolder()" id="addFolder"><img src="images/plus_folder.png" alt="add folder">Add a folder</a>
                 </li>
