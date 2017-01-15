@@ -2,10 +2,12 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 
+extern crate serde;
 extern crate serde_json;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate time;
+extern crate chrono;
 
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_codegen;
@@ -27,7 +29,7 @@ use utils::*;
 use models::*;
 
 #[get("/")]
-fn show_login(cookies: &Cookies) -> io::Result<NamedFile> {
+fn show_login() -> io::Result<NamedFile> {
     NamedFile::open("static/login.html")
 }
 
@@ -69,8 +71,8 @@ fn register(user_new: Form<UserNew>) -> Redirect {
 fn dashboard(cookies: &Cookies) -> Result<Template, Redirect> {
     if let Ok(user_id) = get_id_from_session(&cookies) {
         let user: User = User::get(user_id);
-        Ok(Template::render("dashboard_base", &Context::folder_view(user_id)))
-        //Ok(NamedFile::open("static/dashboard.html"))
+        println!("ole ole");
+        Ok(Template::render("dashboard_folder", &Context::folder_view(user_id, "test".to_string())))
     } else {
         Err(Redirect::to("/login"))
     }

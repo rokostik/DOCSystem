@@ -17,7 +17,7 @@ pub fn get_id_from_session(cookies: &Cookies) -> Result<i32, String>{
 }
 
 #[derive(Debug, Serialize)]
-pub struct Context{ user: User, folders: Vec<Folder> }
+pub struct Context{ user: User, folders: Vec<Folder>, documents: Vec<Document>, folder_name: String }
 
 impl Context {
     /*pub fn err(msg: &'a str) -> Context<'static, 'a> {
@@ -28,9 +28,11 @@ impl Context {
         Context{msg: msg, tasks: Task::all()}
     }*/
 
-    pub fn folder_view(user_id: i32) -> Context {
+    pub fn folder_view(user_id: i32, mut folder_name: String) -> Context {
         let user: User = User::get(user_id);
         let folders: Vec<Folder> = (&user).get_folders();
-        Context{user: user, folders: folders}
+        let folder = folders.clone().into_iter().filter(|folder| folder.name == folder_name).next().unwrap();
+        let documents: Vec<Document> = folder.get_documents();
+        Context{user: user, folders: folders, documents: documents, folder_name: folder_name}
     }
 }

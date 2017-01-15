@@ -56,7 +56,7 @@ function showFile(event) {
     });
 }
 
-function showFolder(event) {
+/*function showFolder(event) {
     var mq = window.matchMedia("(max-width: 620px)");
     if(mq.matches){
         showNavigation();
@@ -110,7 +110,7 @@ function showFolder(event) {
 
         main.innerHTML += shareData + tData;
     });
-}
+}*/
 
 function newFile(event) {
     var main = document.getElementById('main');

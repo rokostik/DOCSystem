@@ -57,7 +57,7 @@
             </ul>
         </aside>
         <div class="main" id="main">
-
+          {% block main %}{% endblock main %}
         </div>
     </div>
     <footer>

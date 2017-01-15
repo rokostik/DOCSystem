@@ -1,0 +1,36 @@
+{% extends "dashboard_base.html.tera" %}
+{% block main %}
+  <div class="main-top">
+    <h1>{{ folder_name }}</h1>
+    <a href="#"> <img src="images/share.png" title="Share file" onclick="shareFile()" /> </a>
+  </div>
+  <div class="files">
+      <table>
+          <thead>
+              <tr>
+                  <th>Name</td>
+                  <th width="1%">Changed</td>
+              </tr>
+          </thead>
+          <tbody>
+            {% if documents %}
+              {% for document in documents %}
+                <tr>
+                  <td>
+                    <a href="#" onclick="showFile()">{{ document.file_path }}</a>
+                  </td>
+                  <td>
+                    1.1.2017
+                  </td>
+                </tr>
+              {% endfor %}
+            {% endif%}
+            <tr>
+                <td>
+                  <a onclick="newFile()"><img src="images/plus_file.png">Add a file</a>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+{% endblock main %}
