@@ -2,12 +2,15 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 
+extern crate serde_json;
+extern crate rocket;
+extern crate rocket_contrib;
+extern crate time;
+
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_codegen;
 #[macro_use] extern crate dotenv;
-
-extern crate rocket;
-extern crate time;
+#[macro_use] extern crate serde_derive;
 
 mod static_files;
 mod models;
@@ -17,10 +20,11 @@ use rocket::request::{Form};
 use rocket::response::Redirect;
 use rocket::response::NamedFile;
 use rocket::http::{Cookie, Cookies};
+use rocket_contrib::Template;
 use std::io;
 
 use utils::*;
-use models::{User, UserLogin, UserNew};
+use models::*;
 
 #[get("/")]
 fn show_login(cookies: &Cookies) -> io::Result<NamedFile> {
@@ -30,9 +34,8 @@ fn show_login(cookies: &Cookies) -> io::Result<NamedFile> {
 #[post("/", data = "<user_login>")]
 fn login(cookies: &Cookies, user_login: Form<UserLogin>) -> Redirect {
     let user: User = user_login.into_inner().get();
-    println!("{:?}", user);
-    let mut cookie: Cookie = Cookie::new("session".to_string(), "1".to_string());
-    cookie.expires = Some(time::now() + time::Duration::minutes(15));
+    let mut cookie: Cookie = Cookie::new("session".to_string(), user.id.to_string());
+    cookie.expires = Some(time::now() + time::Duration::minutes(10));
     cookies.add(cookie);
     Redirect::to("/")
 }
@@ -63,9 +66,11 @@ fn register(user_new: Form<UserNew>) -> Redirect {
 }
 
 #[get("/")]
-fn dashboard(cookies: &Cookies) -> Result<io::Result<NamedFile>, Redirect> {
-    if let Ok(user_id) = utils::get_id_from_session(&cookies) {
-        Ok(NamedFile::open("static/dashboard.html"))
+fn dashboard(cookies: &Cookies) -> Result<Template, Redirect> {
+    if let Ok(user_id) = get_id_from_session(&cookies) {
+        let user: User = User::get(user_id);
+        Ok(Template::render("dashboard_base", &Context::folder_view(user_id)))
+        //Ok(NamedFile::open("static/dashboard.html"))
     } else {
         Err(Redirect::to("/login"))
     }

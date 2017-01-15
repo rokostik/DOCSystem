@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Dokumentni sistem</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script src="js/script.js"></script>
+</head>
+
+<body class="main-container">
+    <header>
+        <span><img src="images/hamburger.png" id="hamburger" onclick="showNavigation()" alt="hamburger"/> </span>
+        <span class="title">DOCSystem</span>
+        <span><input placeholder="search" /></span>
+        <span id="user">Rok Sušnik</span>
+        <span><a id="header_logout" href="logout">Logout</a></span>
+    </header>
+    <div class="content-container">
+        <aside>
+            <ul>
+              <!--
+                <li>
+                    <a onclick="showFolder()">Vacation</a>
+                </li>
+                <li>
+                    <a href="#">Birthday party</a>
+                </li>
+                <li>
+                    <a href="#">Saturday night</a>
+                </li>
+                <li>
+                    <a href="#">Family</a>
+                </li>
+                <li>
+                    <a href="#">Friends</a>
+                </li>
+                <li>
+                    <a href="#">School project</a>
+                </li>
+                !-->
+                {% if folders %}
+                  {% for folder in folders %}
+                    <li>
+                      <a href="#">{{ folder.name }}</a>
+                    </li>
+                  {% endfor %}
+                {% endif %}
+
+                <li>
+                    <a onclick="addFolder()" id="addFolder"><img src="images/plus_folder.png" alt="add folder">Add a folder</a>
+                </li>
+                <li>
+                    <a href="logout" id="aside_logout">Logout</a>
+                </li>
+            </ul>
+        </aside>
+        <div class="main" id="main">
+
+        </div>
+    </div>
+    <footer>
+        &copy; Rok Sušnik
+    </footer>
+</body>
+
+</html>
