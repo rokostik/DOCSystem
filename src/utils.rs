@@ -17,22 +17,34 @@ pub fn get_id_from_session(cookies: &Cookies) -> Result<i32, String>{
 }
 
 #[derive(Debug, Serialize)]
-pub struct Context{ user: User, folders: Vec<Folder>, documents: Vec<Document>, folder_name: String }
+pub struct Context{ user: User,
+                    folders: Vec<Folder>,
+                    folder_name: String,
+                    documents: Option<Vec<Document>>,
+                    document: Option<Document>, }
 
 impl Context {
-    /*pub fn err(msg: &'a str) -> Context<'static, 'a> {
-        Context{msg: Some(("error", msg)), tasks: Task::all()}
-    }
-
-    pub fn raw(msg: Option<(&'a str, &'b str)>) -> Context<'a, 'b> {
-        Context{msg: msg, tasks: Task::all()}
-    }*/
-
-    pub fn folder_view(user_id: i32, mut folder_name: String) -> Context {
+    pub fn folder_view(user_id: i32, folder_name: String) -> Context {
         let user: User = User::get(user_id);
         let folders: Vec<Folder> = (&user).get_folders();
         let folder = folders.clone().into_iter().filter(|folder| folder.name == folder_name).next().unwrap();
         let documents: Vec<Document> = folder.get_documents();
-        Context{user: user, folders: folders, documents: documents, folder_name: folder_name}
+        Context{ user: user,
+                 folders: folders,
+                 folder_name: folder_name,
+                 documents: Some(documents),
+                 document: None }
+    }
+
+    pub fn document_view(user_id: i32, folder_name: String, document_name: String) -> Context {
+        let user: User = User::get(user_id);
+        let folders: Vec<Folder> = (&user).get_folders();
+        let folder = folders.clone().into_iter().filter(|folder| folder.name == folder_name).next().unwrap();
+        let document = folder.get_document_by_name(document_name);
+        Context{ user: user,
+                 folders: folders,
+                 folder_name: folder_name,
+                 documents: None,
+                 document: Some(document) }
     }
 }

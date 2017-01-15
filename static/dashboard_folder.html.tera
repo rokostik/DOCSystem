@@ -2,7 +2,7 @@
 {% block main %}
   <div class="main-top">
     <h1>{{ folder_name }}</h1>
-    <a href="#"> <img src="images/share.png" title="Share file" onclick="shareFile()" /> </a>
+    <a href="#"> <img src="/static/images/share.png" title="Share file" onclick="shareFile()" /> </a>
   </div>
   <div class="files">
       <table>
@@ -17,7 +17,7 @@
               {% for document in documents %}
                 <tr>
                   <td>
-                    <a href="#" onclick="showFile()">{{ document.file_path }}</a>
+                    <a href="{{ folder_name }}/{{ document.file_path }}">{{ document.file_path }}</a>
                   </td>
                   <td>
                     1.1.2017
@@ -27,7 +27,7 @@
             {% endif%}
             <tr>
                 <td>
-                  <a onclick="newFile()"><img src="images/plus_file.png">Add a file</a>
+                  <a onclick="newFile()"><img src="/static/images/plus_file.png">Add a file</a>
                 </td>
             </tr>
           </tbody>

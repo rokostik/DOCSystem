@@ -5,17 +5,17 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <script src="js/script.js"></script>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <script src="/static/js/script.js"></script>
 </head>
 
 <body class="main-container">
     <header>
-        <span><img src="images/hamburger.png" id="hamburger" onclick="showNavigation()" alt="hamburger"/> </span>
+        <span><img src="/static/images/hamburger.png" id="hamburger" onclick="showNavigation()" alt="hamburger"/> </span>
         <span class="title">DOCSystem</span>
         <span><input placeholder="search" /></span>
-        <span id="user">Rok Sušnik</span>
-        <span><a id="header_logout" href="logout">Logout</a></span>
+        <span id="user">{{ user.name }} {{ user.surname }}</span>
+        <span><a id="header_logout" href="/logout">Logout</a></span>
     </header>
     <div class="content-container">
         <aside>
@@ -23,12 +23,12 @@
                 {% if folders %}
                   {% for folder in folders %}
                     <li>
-                      <a href="{{ folder.name }}">{{ folder.name }}</a>
+                      <a href="/home/{{ folder.name }}">{{ folder.name }}</a>
                     </li>
                   {% endfor %}
                 {% endif %}
                 <li>
-                    <a onclick="addFolder()" id="addFolder"><img src="images/plus_folder.png" alt="add folder">Add a folder</a>
+                    <a onclick="addFolder()" id="addFolder"><img src="/static/images/plus_folder.png" alt="add folder">Add a folder</a>
                 </li>
                 <li>
                     <a href="logout" id="aside_logout">Logout</a>

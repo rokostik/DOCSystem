@@ -54,8 +54,8 @@ pub struct UserLogin {
 impl UserLogin {
     pub fn get(&self) -> User {
         users::table.filter(users::username.eq(&self.username))
-            .filter(users::password.eq(&self.password))
-            .first(&db()).expect("Error getting user.")
+                    .filter(users::password.eq(&self.password))
+                    .first(&db()).expect("Error getting user.")
     }
 }
 
@@ -87,6 +87,11 @@ pub struct Folder {
 impl Folder {
     pub fn get_documents(&self) -> Vec<Document> {
         Document::belonging_to(self).load(&db()).expect("Error getting documents.")
+    }
+
+    pub fn get_document_by_name(&self, document_name: String) -> Document {
+        Document::belonging_to(self).filter(documents::file_path.eq(document_name))
+                                    .first(&db()).expect("Error getting document.")
     }
 }
 
