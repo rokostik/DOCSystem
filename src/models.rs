@@ -12,7 +12,6 @@ use self::schema::users;
 
 fn db() -> PgConnection {
     dotenv().ok();
-
     let database_url = env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
@@ -36,8 +35,11 @@ pub struct UserLogin {
 }
 
 impl UserLogin {
-    pub fn get(&self) -> Vec<User> {
-        users::table.load(&db()).expect("Error getting user")
+    pub fn get(&self) -> User {
+        let users: Vec<User> = users::table.filter(users::username.eq(&self.username))
+                    .filter(users::password.eq(&self.password))
+                    .load(&db()).expect("Error getting user");
+        users[0].clone()
     }
 }
 

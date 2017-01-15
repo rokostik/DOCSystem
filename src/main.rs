@@ -11,40 +11,29 @@ extern crate time;
 
 mod static_files;
 mod models;
+mod utils;
 
 use rocket::request::{Form};
 use rocket::response::Redirect;
+use rocket::response::NamedFile;
 use rocket::http::{Cookie, Cookies};
 use std::io;
 
-use rocket::response::NamedFile;
+use utils::*;
 use models::{User, UserLogin, UserNew};
 
 #[get("/")]
 fn show_login(cookies: &Cookies) -> io::Result<NamedFile> {
-
-    /*if let Some(cookie) = cookies.find("session") {
-        let mut cook = cookie;
-        println!("{:?}", cook);
-        cook.expires = Some(time::now() + time::Duration::minutes(15));
-        cookies.add(cook);
-
-        cookies.remove("session");
-    }
-    */
-
-
     NamedFile::open("static/login.html")
 }
 
 #[post("/", data = "<user_login>")]
 fn login(cookies: &Cookies, user_login: Form<UserLogin>) -> Redirect {
-    let user: Vec<User> = user_login.into_inner().get();
-
+    let user: User = user_login.into_inner().get();
+    println!("{:?}", user);
     let mut cookie: Cookie = Cookie::new("session".to_string(), "1".to_string());
     cookie.expires = Some(time::now() + time::Duration::minutes(15));
     cookies.add(cookie);
-    println!("{:?}", user);
     Redirect::to("/")
 }
 
@@ -62,30 +51,24 @@ fn show_register() -> io::Result<NamedFile> {
 }
 
 #[post("/", data = "<user_new>")]
-fn register(user_new: Form<UserNew>) -> io::Result<NamedFile> {
+fn register(user_new: Form<UserNew>) -> Redirect {
     let user = user_new.into_inner();
     //TODO:validation
     if user.insert() {
-        NamedFile::open("static/dashboard.html")
+        Redirect::to("/login")
     }
     else {
-        NamedFile::open("static/login.html")
+        Redirect::to("/register")
     }
 }
 
 #[get("/")]
 fn dashboard(cookies: &Cookies) -> Result<io::Result<NamedFile>, Redirect> {
-    for cookie in cookies.iter() {
-        println!("{:?}", cookie);
-    }
-
-    if let Some(cookie) = cookies.find("session") {
+    if let Ok(user_id) = utils::get_id_from_session(&cookies) {
         Ok(NamedFile::open("static/dashboard.html"))
-    }
-    else {
+    } else {
         Err(Redirect::to("/login"))
     }
-
 }
 
 fn main() {
