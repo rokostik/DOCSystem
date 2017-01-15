@@ -166,7 +166,7 @@ function showNavigation() {
 }
 
 function logout() {
-    window.location.pathname = "login.html";
+    window.location.pathname = "";
 }
 
 document.addEventListener("DOMContentLoaded", function() {
