@@ -8,6 +8,7 @@ use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use std::env;
 use chrono::NaiveDateTime;
+use bcrypt::{DEFAULT_COST, hash, verify};
 
 use self::schema::*;
 
@@ -32,8 +33,9 @@ pub struct User {
 
 impl User {
 
-    /*pub fn new_folder(&self, folder_name: String) {
-        diesel::insert(&folder).into(folders::table).belonging_to(&self).execute(&db()).is_ok()
+    /*pub fn new_folder(&self, mut folder: FolderNew) {
+        folder.user_id = self.id;
+        diesel::insert(&folder).into(folders::table).belonging_to(self).execute(&db()).is_ok()
     }*/
 
     pub fn get(id: i32) -> User {
@@ -53,9 +55,13 @@ pub struct UserLogin {
 
 impl UserLogin {
     pub fn get(&self) -> User {
-        users::table.filter(users::username.eq(&self.username))
-                    .filter(users::password.eq(&self.password))
-                    .first(&db()).expect("Error getting user.")
+        let user: User = users::table.filter(users::username.eq(&self.username))
+                    .first(&db()).expect("Error getting user.");
+
+        let valid = match verify(self.password.as_str(), &user.password) {
+            Ok(valid) => return user,
+            Err(_) => panic!("Incorrect password")
+        };
     }
 }
 
@@ -69,7 +75,13 @@ pub struct UserNew {
 }
 
 impl UserNew {
-    pub fn insert(&self) -> bool {
+    pub fn insert(&mut self) -> bool {
+        let hashed_password = match hash(self.password.as_str(), DEFAULT_COST) {
+            Ok(h) => h,
+            Err(_) => panic!()
+        };
+
+        self.password = hashed_password;
         diesel::insert(self).into(users::table).execute(&db()).is_ok()
     }
 }
@@ -94,6 +106,21 @@ impl Folder {
                                     .first(&db()).expect("Error getting document.")
     }
 }
+
+/*#[table_name = "folders"]
+#[derive(Serialize, Insertable, FromForm, Debug, Clone, Associations)]
+#[belongs_to(User)]
+#[has_many(documents)]
+pub struct FolderNew {
+    pub user_id: i32,
+    pub name: String,
+}
+
+impl FolderNew {
+    /*pub fn insert(&self, user: User) -> bool {
+        diesel::insert(self).into(folders::table).belonging_to(user).execute(&db()).is_ok()
+    }*/
+}*/
 
 #[table_name = "documents"]
 #[derive(Serialize, Queryable, Insertable, Debug, Clone, Identifiable, Associations)]

@@ -8,6 +8,9 @@ extern crate rocket;
 extern crate rocket_contrib;
 extern crate time;
 extern crate chrono;
+extern crate rand;
+extern crate redis;
+extern crate bcrypt;
 
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_codegen;
@@ -29,23 +32,25 @@ use utils::*;
 use models::*;
 
 #[get("/")]
-fn show_login() -> io::Result<NamedFile> {
+fn show_login(cookies: &Cookies) -> io::Result<NamedFile> {
     NamedFile::open("static/login.html")
 }
 
 #[post("/", data = "<user_login>")]
 fn login(cookies: &Cookies, user_login: Form<UserLogin>) -> Redirect {
     let user: User = user_login.into_inner().get();
-    let mut cookie: Cookie = Cookie::new("session".to_string(), user.id.to_string());
-    cookie.expires = Some(time::now() + time::Duration::minutes(10));
+    let api_key = utils::generate_api_key();
+    save_to_redis(api_key.clone(), user.id);
+    let mut cookie: Cookie = Cookie::new("doc-session".to_string(), api_key);
     cookies.add(cookie);
     Redirect::to("/")
 }
 
-#[get("/logout")]
+#[get("/")]
 fn logout(cookies: &Cookies) -> Redirect {
-    if let Some(cookie) = cookies.find("session") {
-        cookies.remove("session");
+    if let Some(cookie) = cookies.find("doc-session") {
+        remove_from_redis(cookie.value);
+        cookies.remove("doc-session");
     }
     Redirect::to("/login")
 }
@@ -57,7 +62,7 @@ fn show_register() -> io::Result<NamedFile> {
 
 #[post("/", data = "<user_new>")]
 fn register(user_new: Form<UserNew>) -> Redirect {
-    let user = user_new.into_inner();
+    let mut user = user_new.into_inner();
     //TODO:validation
     if user.insert() {
         Redirect::to("/login")
@@ -69,7 +74,7 @@ fn register(user_new: Form<UserNew>) -> Redirect {
 
 #[get("/")]
 fn dashboard_redirect(cookies: &Cookies) -> Redirect {
-    if let Ok(user_id) = get_id_from_session(&cookies) {
+    if let Some(user_id) = get_id_from_session(&cookies) {
         let user: User = User::get(user_id);
         let folders: Vec<Folder> = (&user).get_folders();
         let ref folder_name = folders[0].name;
@@ -81,7 +86,7 @@ fn dashboard_redirect(cookies: &Cookies) -> Redirect {
 
 #[get("/<folder_name>")]
 fn show_folder(cookies: &Cookies, folder_name: &str) -> Result<Template, Redirect> {
-    if let Ok(user_id) = get_id_from_session(&cookies) {
+    if let Some(user_id) = get_id_from_session(&cookies) {
         let user: User = User::get(user_id);
         Ok(Template::render("dashboard_folder", &Context::folder_view(user_id, folder_name.to_string())))
     } else {
@@ -91,13 +96,29 @@ fn show_folder(cookies: &Cookies, folder_name: &str) -> Result<Template, Redirec
 
 #[get("/<folder_name>/<document_name>")]
 fn show_document(cookies: &Cookies, folder_name: &str, document_name: &str) -> Result<Template, Redirect> {
-    if let Ok(user_id) = get_id_from_session(&cookies) {
+    if let Some(user_id) = get_id_from_session(&cookies) {
         let user: User = User::get(user_id);
-        Ok(Template::render("dashboard_folder", &Context::document_view(user_id, folder_name.to_string(), document_name.to_string())))
+        Ok(Template::render("dashboard_document", &Context::document_view(user_id, folder_name.to_string(), document_name.to_string())))
     } else {
         Err(Redirect::to("/login"))
     }
 }
+
+/*#[post("/", data="<folder_new>")]
+fn new_folder(cookies: &Cookies, folder_new: Form<FolderNew>) -> Redirect {
+    if let Ok(user_id) = get_id_from_session(&cookies) {
+        let user: User = User::get(user_id);
+        if user.new_folder(folder_new) {
+            Redirect::to("/")
+        }
+        else {
+            Redirect::to("/")
+        }
+
+    } else {
+        Redirect::to("/login")
+    }
+}*/
 
 #[error(404)]
 fn not_found(req: &rocket::Request) -> String {
@@ -105,8 +126,9 @@ fn not_found(req: &rocket::Request) -> String {
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![dashboard_redirect, logout, static_files::all])
+    rocket::ignite().mount("/", routes![dashboard_redirect, static_files::all])
                     .mount("/home", routes![show_folder, show_document])
+                    //.mount("/new", routes![new_folder])
                     .mount("/login", routes![login, show_login])
                     .mount("/logout", routes![logout])
                     .mount("/register", routes![register, show_register])

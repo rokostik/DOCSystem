@@ -12,7 +12,7 @@
 <body class="main-container">
     <header>
         <span><img src="/static/images/hamburger.png" id="hamburger" onclick="showNavigation()" alt="hamburger"/> </span>
-        <span class="title">DOCSystem</span>
+        <span class="title"><a href="/">DOCSystem</a></span>
         <span><input placeholder="search" /></span>
         <span id="user">{{ user.name }} {{ user.surname }}</span>
         <span><a id="header_logout" href="/logout">Logout</a></span>
@@ -31,7 +31,7 @@
                     <a onclick="addFolder()" id="addFolder"><img src="/static/images/plus_folder.png" alt="add folder">Add a folder</a>
                 </li>
                 <li>
-                    <a href="logout" id="aside_logout">Logout</a>
+                    <a href="/logout" id="aside_logout">Logout</a>
                 </li>
             </ul>
         </aside>
