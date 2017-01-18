@@ -19,7 +19,8 @@ extern crate bcrypt;
 
 mod static_files;
 mod models;
-mod utils;
+mod session;
+mod context;
 
 use rocket::request::{Form};
 use rocket::response::Redirect;
@@ -28,8 +29,9 @@ use rocket::http::{Cookie, Cookies};
 use rocket_contrib::Template;
 use std::io;
 
-use utils::*;
+use session::*;
 use models::*;
+use context::*;
 
 #[get("/")]
 fn show_login(cookies: &Cookies) -> io::Result<NamedFile> {
@@ -39,7 +41,7 @@ fn show_login(cookies: &Cookies) -> io::Result<NamedFile> {
 #[post("/", data = "<user_login>")]
 fn login(cookies: &Cookies, user_login: Form<UserLogin>) -> Redirect {
     let user: User = user_login.into_inner().get();
-    let api_key = utils::generate_api_key();
+    let api_key = session::generate_api_key();
     save_to_redis(api_key.clone(), user.id);
     let mut cookie: Cookie = Cookie::new("doc-session".to_string(), api_key);
     cookies.add(cookie);
@@ -87,7 +89,6 @@ fn dashboard_redirect(cookies: &Cookies) -> Redirect {
 #[get("/<folder_name>")]
 fn show_folder(cookies: &Cookies, folder_name: &str) -> Result<Template, Redirect> {
     if let Some(user_id) = get_id_from_session(&cookies) {
-        let user: User = User::get(user_id);
         Ok(Template::render("dashboard_folder", &Context::folder_view(user_id, folder_name.to_string())))
     } else {
         Err(Redirect::to("/login"))
@@ -120,18 +121,42 @@ fn new_folder(cookies: &Cookies, folder_new: Form<FolderNew>) -> Redirect {
     }
 }*/
 
+#[get("/")]
+fn show_profile(cookies: &Cookies) -> Result<Template, Redirect> {
+    if let Some(user_id) = get_id_from_session(&cookies) {
+        Ok(Template::render("dashboard_user", &Context::profile_view(user_id)))
+    } else {
+        Err(Redirect::to("/login"))
+    }
+}
+
+#[post("/", data = "<user_updated>")]
+fn update_profile(cookies: &Cookies, user_updated: Form<UserNew>) -> Redirect {
+    if let Some(user_id) = get_id_from_session(&cookies) {
+        let user_updated = user_updated.into_inner();
+        let mut user = User::get(user_id);
+        //TODO:validation
+        println!("router user_name: {:?}", user_updated.name);
+        user.update_profile(user_updated);
+        Redirect::to("/")
+    } else {
+        Redirect::to("/login")
+    }
+}
+
 #[error(404)]
 fn not_found(req: &rocket::Request) -> String {
     format!("<p>'{}' was not found</p>", req.uri())
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![dashboard_redirect, static_files::all])
-                    .mount("/home", routes![show_folder, show_document])
-                    //.mount("/new", routes![new_folder])
-                    .mount("/login", routes![login, show_login])
-                    .mount("/logout", routes![logout])
+    rocket::ignite().mount("/",         routes![dashboard_redirect, static_files::all])
+                    .mount("/home",     routes![show_folder, show_document])
+                    //.mount("/new",    routes![new_folder])
+                    .mount("/login",    routes![login, show_login])
+                    .mount("/logout",   routes![logout])
                     .mount("/register", routes![register, show_register])
+                    .mount("/user",     routes![update_profile, show_profile])
                     .catch(errors![not_found])
                     .launch();
 }

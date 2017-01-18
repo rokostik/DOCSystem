@@ -109,7 +109,7 @@ header a {
     margin-left: 1em;
 }
 
-.new-file input[type="submit"] {
+.new-file input[type="submit"], .update_profile input[type="submit"] {
     background-color: royalblue;
     color: white;
 }
@@ -176,6 +176,19 @@ header a {
 .files a img {
     max-height: 2em;
     padding-top: 2px;
+}
+
+.update_profile {
+    text-align: center;
+}
+
+.update_profile input {
+    margin-bottom: 1em;
+    width: 170px;
+}
+
+.update_profile h1 {
+  margin-bottom: 1em;
 }
 
 aside {

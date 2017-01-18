@@ -1,0 +1,13 @@
+{% extends "dashboard_base.html.tera" %}
+{% block main %}
+<div class="update_profile">
+  <h1>This is you {{ user.name }}.</h1>
+  <form class="update_profile_form" method="post" action="/user">
+    <label>Name: <input type="text" name="name" value="{{ user.name }}" required /></label>
+    <label>Surname: <input type="text" name="surname" value="{{ user.surname }}" required /></label>
+    <label>Username: <input type="text" name="username" value="{{ user.username }}" required /></label>
+    <label>Password: <input type="password" name="password" pattern=".{6,}" title="At least 6 characters" required /></label>
+    <label><input type="submit" value="Update profile"/></label>
+  </form>
+</div>
+{% endblock main %}

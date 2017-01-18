@@ -29,7 +29,7 @@ function newFile(event) {
         '<h1><a href="dashboard_document">Vacation</a> / New file</h1>'+
     '</div>'+
     '<div class="new-file">'+
-        '<form action="dashboard.html" enctype="multipart/form-data">'+
+        '<form method="post" action="dashboard.html">'+
             '<label>Select file:<input type="file" name="file" accept="image/*" id="upload" onchange="onFileSelect(event);" required></label>'+
             '<label>Name:<input name="file_name" id="fileName" required/></label>'+
             '<label class="tags main-tags">Tags:<a href="#" onclick="addTag(event)" id="addTag"> +Add tag</a></label>'+

@@ -14,7 +14,7 @@
         <span><img src="/static/images/hamburger.png" id="hamburger" onclick="showNavigation()" alt="hamburger"/> </span>
         <span class="title"><a href="/">DOCSystem</a></span>
         <span><input placeholder="search" /></span>
-        <span id="user">{{ user.name }} {{ user.surname }}</span>
+        <span id="user"><a href="/user">{{ user.name }} {{ user.surname }}</a></span>
         <span><a id="header_logout" href="/logout">Logout</a></span>
     </header>
     <div class="content-container">

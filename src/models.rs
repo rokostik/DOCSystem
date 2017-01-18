@@ -21,7 +21,7 @@ fn db() -> PgConnection {
 }
 
 #[table_name = "users"]
-#[derive(Serialize, Queryable, Insertable, FromForm, Debug, Clone, Identifiable, Associations)]
+#[derive(Serialize, Queryable, Insertable, FromForm, Debug, Clone, Identifiable, Associations, AsChangeset)]
 #[has_many(folders)]
 pub struct User {
     pub id: i32,
@@ -44,6 +44,20 @@ impl User {
 
     pub fn get_folders(&self) -> Vec<Folder> {
         Folder::belonging_to(self).load(&db()).expect("Error getting folders.")
+    }
+
+    pub fn update_profile(&mut self, updated_profile: UserNew) {
+        println!("dao user_name: {:?}", updated_profile.name);
+        self.name = updated_profile.name;
+        self.surname = updated_profile.surname;
+        self.username = updated_profile.username;
+        let hashed_password = match hash(updated_profile.password.as_str(), 10) {
+            Ok(h) => h,
+            Err(_) => panic!()
+        };
+        self.password = hashed_password;
+
+        let _: User = self.save_changes(&db()).expect("Error updating user");
     }
 }
 
@@ -76,7 +90,7 @@ pub struct UserNew {
 
 impl UserNew {
     pub fn insert(&mut self) -> bool {
-        let hashed_password = match hash(self.password.as_str(), DEFAULT_COST) {
+        let hashed_password = match hash(self.password.as_str(), 10) {
             Ok(h) => h,
             Err(_) => panic!()
         };
