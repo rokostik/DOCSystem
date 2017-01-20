@@ -42,18 +42,18 @@ pub fn get_id_from_session(cookies: &Cookies) -> Option<i32> {
 fn get_user_id_from_api_key(api_key: String) -> Option<i32> {
     let con = get_redis_connection();
     let user_id = con.get(&api_key);
+    println!("{:?}", user_id);
     match user_id {
-        Ok(id) => {
+        Ok(_) => {
             let _ : () = con.expire(&api_key, SESSION_LENGTH).unwrap();
             user_id.unwrap()
         },
-        Err(e)  => None
+        Err(_)  => None
     }
 }
 
 fn get_redis_connection() -> redis::Connection {
-    let redis_url = env::var("REDIS_URL")
-        .expect("REDIS_URL must be set");
+    let redis_url = env::var("REDIS_URL").expect("REDIS_URL must be set");
     let client = redis::Client::open(&redis_url[..]).unwrap();
     client.get_connection().unwrap()
 }

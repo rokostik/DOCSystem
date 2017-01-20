@@ -9,7 +9,6 @@ pub struct Context{ user: User,
 
 impl Context {
     pub fn folder_view(user_id: i32, folder_name: Option<String>) -> Context {
-        //TODO: user without folders
         let user: User = User::get(user_id);
         let folders: Vec<Folder> = (&user).get_folders();
         match folder_name {

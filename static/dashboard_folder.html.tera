@@ -3,7 +3,6 @@
     <div class="main-top">
       {% if folders %}
         <h1>{{ folder_name }}</h1>
-        <a href="#"> <img src="/static/images/share.png" title="Share file" onclick="shareFile()" /> </a>
       </div>
       <div class="files">
           <table>
@@ -17,7 +16,7 @@
                   {% for document in documents %}
                     <tr>
                       <td>
-                        <a href="/home/{{ folder_name }}/{{ document.file_name }}">{{ document.file_path }}</a>
+                        <a href="/home/{{ folder_name }}/{{ document.file_name }}">{{ document.file_name }}</a>
                       </td>
                     </tr>
                   {% endfor %}

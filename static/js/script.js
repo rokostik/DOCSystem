@@ -43,7 +43,6 @@ function newFile(folder_name) {
         '<form method="post" action="/home/'+ folder_name +'">'+
             '<label>Select file:<input type="file" name="file" accept="image/*" id="upload" onchange="onFileSelect(event);" required></label>'+
             '<label>Name:<input name="file_name" id="fileName" required/></label>'+
-            '<label class="tags main-tags">Tags:<a href="#" onclick="addTag(event)" id="addTag"> +Add tag</a></label>'+
             '<label>I am not a robot <input type="checkbox" required/></label>'+
             '<label><input type="submit"/ value="Upload"></label>'+
             '<input type="hidden" name="file_b64" id=base64file</input>'

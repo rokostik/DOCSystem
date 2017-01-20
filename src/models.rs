@@ -7,11 +7,12 @@ use diesel::prelude::*;
 use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use std::env;
-use chrono::NaiveDateTime;
 use bcrypt::{hash, verify};
 use base64::decode;
 use std::io::prelude::*;
-use std::fs::File;
+use std::io::Write;
+use std::fs::{File, OpenOptions};
+use chrono::*;
 
 use self::schema::*;
 
@@ -45,18 +46,20 @@ impl User {
 
     pub fn new_folder(&self, folder_name: &str) -> bool {
         let folder_new = FolderNew { user_id: self.id, name: String::from(folder_name) };
+        self.log_access(format!("added folder"));
         diesel::insert(&folder_new).into(folders::table).execute(&db()).is_ok()
     }
 
     pub fn new_document(&self, folder_name: String, document: DocumentForm) -> bool {
         let folder = Folder::get_folder_by_name(folder_name);
-        let fileBytes = &decode(&document.file_b64).unwrap();
+        let file_bytes = &decode(&document.file_b64).unwrap();
 
         let mut buffer = File::create(["static/documents/", &document.file].join("")).unwrap()  ;
-        buffer.write(&fileBytes);
+        buffer.write(&file_bytes);
 
         let document_new = DocumentNew { user_id: self.id, folder_id: folder.id,
                                          file_path: document.file, file_name: document.file_name };
+        self.log_access(format!("added document"));
         diesel::insert(&document_new).into(documents::table).execute(&db()).is_ok()
     }
 
@@ -71,6 +74,20 @@ impl User {
         self.password = hashed_password;
 
         let _: User = self.save_changes(&db()).expect("Error updating user");
+        self.log_access(format!("updated profile"));
+    }
+
+    fn log_access(&self, action: String) {
+        let mut file = OpenOptions::new()
+                        .write(true)
+                        .append(true)
+                        .create(true)
+                        .open("log/access_log.txt")
+                        .unwrap();
+
+        if let Err(e) = writeln!(file, "{} {} {}", UTC::now().format("%Y-%m-%d %H:%M:%S").to_string(), self.username, action) {
+            println!("{}", e);
+        }
     }
 }
 
@@ -85,10 +102,18 @@ impl UserLogin {
         let user: User = users::table.filter(users::username.eq(&self.username))
                     .first(&db()).expect("Error getting user.");
 
-        let valid = match verify(self.password.as_str(), &user.password) {
-            Ok(valid) => return user,
+        match verify(self.password.as_str(), &user.password) {
+            Ok(_) => {
+                user.log_access(format!("logged in"));
+                return user;
+            }
             Err(_) => panic!("Incorrect password")
         };
+    }
+
+    pub fn validate(&self) -> bool {
+        !self.username.is_empty() && self.username.len() < 20 &&
+        !self.password.is_empty() && self.password.len() < 60
     }
 }
 
@@ -111,6 +136,13 @@ impl UserNew {
         self.password = hashed_password;
         diesel::insert(self).into(users::table).execute(&db()).is_ok()
     }
+
+    pub fn validate(&self) -> bool {
+        !self.username.is_empty() && self.username.len() < 20 &&
+        !self.name.is_empty() && self.name.len() < 20 &&
+        !self.surname.is_empty() && self.surname.len() < 20 &&
+        !self.password.is_empty() && self.password.len() < 60
+    }
 }
 
 #[table_name = "folders"]
@@ -129,7 +161,7 @@ impl Folder {
     }
 
     pub fn get_document_by_name(&self, document_name: String) -> Document {
-        Document::belonging_to(self).filter(documents::file_path.eq(document_name))
+        Document::belonging_to(self).filter(documents::file_name.eq(document_name))
                                     .first(&db()).expect("Error getting document.")
     }
 
@@ -142,6 +174,12 @@ impl Folder {
 #[derive(Serialize, FromForm, Debug, Clone)]
 pub struct FolderForm {
     pub folder_name: String,
+}
+
+impl FolderForm {
+    pub fn validate(&self) -> bool {
+        !self.folder_name.is_empty() && self.folder_name.len() < 15 && self.folder_name.find(" ") == None
+    }
 }
 
 #[table_name = "folders"]
@@ -177,4 +215,12 @@ pub struct DocumentForm {
     pub file: String,
     pub file_name: String,
     pub file_b64: String,
+}
+
+impl DocumentForm {
+    pub fn validate(&self) -> bool {
+        !self.file.is_empty() && self.file.len() < 50 &&
+        !self.file_name.is_empty() && self.file_name.len() < 20 && self.file_name.find(" ") == None &&
+        !self.file_b64.is_empty()
+    }
 }
