@@ -8,6 +8,17 @@ function onFileSelect(event) {
       }
       document.getElementById('fileName').value = filename;
     }
+
+    var file = document.querySelector('input[type=file]').files[0];
+    var reader = new FileReader();
+
+    reader.addEventListener("load", function () {
+      document.querySelector('input[type=hidden]').value = reader.result.split(",")[1];
+    }, false);
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
 }
 
 function addTag(event) {
@@ -22,19 +33,20 @@ function addTag(event) {
     }
 }
 
-function newFile(event) {
+function newFile(folder_name) {
     var main = document.getElementById('main');
     main.innerHTML =
     '<div class="main-top new-file-heading">'+
-        '<h1><a href="dashboard_document">Vacation</a> / New file</h1>'+
+        '<h1><a href="/home/'+ folder_name +'">'+ folder_name +'</a> / New document</h1>'+
     '</div>'+
     '<div class="new-file">'+
-        '<form method="post" action="dashboard.html">'+
+        '<form method="post" action="/home/'+ folder_name +'">'+
             '<label>Select file:<input type="file" name="file" accept="image/*" id="upload" onchange="onFileSelect(event);" required></label>'+
             '<label>Name:<input name="file_name" id="fileName" required/></label>'+
             '<label class="tags main-tags">Tags:<a href="#" onclick="addTag(event)" id="addTag"> +Add tag</a></label>'+
             '<label>I am not a robot <input type="checkbox" required/></label>'+
             '<label><input type="submit"/ value="Upload"></label>'+
+            '<input type="hidden" name="file_b64" id=base64file</input>'
         '</form>'+
     '</div >';
 }
@@ -42,12 +54,18 @@ function newFile(event) {
 function addFolder(event) {
     var name = prompt("Please enter the folder name", "");
     if (name != null && name != "") {
-        var folderLink = document.getElementById('addFolder');
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", "/new");
 
-        var listItem = document.createElement('li');
-            listItem.innerHTML = '<a href="#">' + name + '</a>';
-        folderLink.parentNode.parentNode.insertBefore(listItem, folderLink.parentNode);
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", "folder_name");
+        hiddenField.setAttribute("value", name);
+        form.appendChild(hiddenField);
 
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 

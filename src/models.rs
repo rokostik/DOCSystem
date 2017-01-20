@@ -8,7 +8,10 @@ use diesel::pg::PgConnection;
 use dotenv::dotenv;
 use std::env;
 use chrono::NaiveDateTime;
-use bcrypt::{DEFAULT_COST, hash, verify};
+use bcrypt::{hash, verify};
+use base64::decode;
+use std::io::prelude::*;
+use std::fs::File;
 
 use self::schema::*;
 
@@ -32,12 +35,6 @@ pub struct User {
 }
 
 impl User {
-
-    /*pub fn new_folder(&self, mut folder: FolderNew) {
-        folder.user_id = self.id;
-        diesel::insert(&folder).into(folders::table).belonging_to(self).execute(&db()).is_ok()
-    }*/
-
     pub fn get(id: i32) -> User {
         users::table.find(id).first(&db()).expect("Error getting user.")
     }
@@ -46,8 +43,24 @@ impl User {
         Folder::belonging_to(self).load(&db()).expect("Error getting folders.")
     }
 
+    pub fn new_folder(&self, folder_name: &str) -> bool {
+        let folder_new = FolderNew { user_id: self.id, name: String::from(folder_name) };
+        diesel::insert(&folder_new).into(folders::table).execute(&db()).is_ok()
+    }
+
+    pub fn new_document(&self, folder_name: String, document: DocumentForm) -> bool {
+        let folder = Folder::get_folder_by_name(folder_name);
+        let fileBytes = &decode(&document.file_b64).unwrap();
+
+        let mut buffer = File::create(["static/documents/", &document.file].join("")).unwrap()  ;
+        buffer.write(&fileBytes);
+
+        let document_new = DocumentNew { user_id: self.id, folder_id: folder.id,
+                                         file_path: document.file, file_name: document.file_name };
+        diesel::insert(&document_new).into(documents::table).execute(&db()).is_ok()
+    }
+
     pub fn update_profile(&mut self, updated_profile: UserNew) {
-        println!("dao user_name: {:?}", updated_profile.name);
         self.name = updated_profile.name;
         self.surname = updated_profile.surname;
         self.username = updated_profile.username;
@@ -119,22 +132,25 @@ impl Folder {
         Document::belonging_to(self).filter(documents::file_path.eq(document_name))
                                     .first(&db()).expect("Error getting document.")
     }
+
+    pub fn get_folder_by_name(name: String) -> Self{
+        folders::table.filter(folders::name.eq(name))
+                    .first(&db()).expect("Error getting folder.")
+    }
 }
 
-/*#[table_name = "folders"]
-#[derive(Serialize, Insertable, FromForm, Debug, Clone, Associations)]
-#[belongs_to(User)]
-#[has_many(documents)]
+#[derive(Serialize, FromForm, Debug, Clone)]
+pub struct FolderForm {
+    pub folder_name: String,
+}
+
+#[table_name = "folders"]
+#[derive(Serialize, Queryable, Insertable, Debug, Clone, Associations)]
 pub struct FolderNew {
     pub user_id: i32,
     pub name: String,
 }
 
-impl FolderNew {
-    /*pub fn insert(&self, user: User) -> bool {
-        diesel::insert(self).into(folders::table).belonging_to(user).execute(&db()).is_ok()
-    }*/
-}*/
 
 #[table_name = "documents"]
 #[derive(Serialize, Queryable, Insertable, Debug, Clone, Identifiable, Associations)]
@@ -144,12 +160,21 @@ pub struct Document {
     pub user_id: i32,
     pub folder_id: i32,
     pub file_path: String,
+    pub file_name: String,
 }
 
-impl Document {
-    /*pub fn to_view_struct(&self) -> DocumentView {
-        DocumentView{id: self.id, user_id: self.user_id, folder_id: self.folder_id,
-                     file_path: self.file_path.clone(), date_created: self.date_created.to_string(),
-                     date_modified: self.date_modified.to_string()}
-    }*/
+#[table_name = "documents"]
+#[derive(Serialize, Queryable, Insertable, Debug, Clone, Associations)]
+pub struct DocumentNew {
+    pub user_id: i32,
+    pub folder_id: i32,
+    pub file_path: String,
+    pub file_name: String,
+}
+
+#[derive(Serialize, FromForm, Debug, Clone)]
+pub struct DocumentForm {
+    pub file: String,
+    pub file_name: String,
+    pub file_b64: String,
 }

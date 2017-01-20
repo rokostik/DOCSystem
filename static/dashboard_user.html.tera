@@ -1,7 +1,7 @@
 {% extends "dashboard_base.html.tera" %}
 {% block main %}
 <div class="update_profile">
-  <h1>This is you {{ user.name }}.</h1>
+  <h1>This is you, {{ user.name }}.</h1>
   <form class="update_profile_form" method="post" action="/user">
     <label>Name: <input type="text" name="name" value="{{ user.name }}" required /></label>
     <label>Surname: <input type="text" name="surname" value="{{ user.surname }}" required /></label>

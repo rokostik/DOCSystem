@@ -2,11 +2,11 @@
 {% block main %}
 <div class="main-top">
     <h2>
-      <a href="/home/{{ folder_name }}">{{ folder_name }}</a> / {{ document.file_path }}
+      <a href="/home/{{ folder_name }}">{{ folder_name }}</a> / {{ document.file_name }}
     </h2>
-    <a href="/static/images/'+ json.image +'" alt="download" download><img src="/static/images/download.png" title="Download file" style="padding-top: 3px"/></a>
+    <a href="/static/documents/{{ document.file_path }}" alt="download" download><img src="/static/images/download.png" title="Download file" style="padding-top: 3px"/></a>
 </div>
 <div class="main-image-container">
-    <img src="/static/images/super_cool_image.jpg" alt="image"/>
+    <img src="/static/documents/{{ document.file_path }}" alt="image"/>
 </div>
 {% endblock main %}

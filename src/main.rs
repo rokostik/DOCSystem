@@ -11,6 +11,7 @@ extern crate chrono;
 extern crate rand;
 extern crate redis;
 extern crate bcrypt;
+extern crate base64;
 
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_codegen;
@@ -22,7 +23,7 @@ mod models;
 mod session;
 mod context;
 
-use rocket::request::{Form};
+use rocket::request::Form;
 use rocket::response::Redirect;
 use rocket::response::NamedFile;
 use rocket::http::{Cookie, Cookies};
@@ -79,6 +80,9 @@ fn dashboard_redirect(cookies: &Cookies) -> Redirect {
     if let Some(user_id) = get_id_from_session(&cookies) {
         let user: User = User::get(user_id);
         let folders: Vec<Folder> = (&user).get_folders();
+        if folders.len() == 0 {
+            return Redirect::to("/home")
+        }
         let ref folder_name = folders[0].name;
         Redirect::to(&format!("/home/{}", folder_name))
     } else {
@@ -86,12 +90,40 @@ fn dashboard_redirect(cookies: &Cookies) -> Redirect {
     }
 }
 
+#[get("/")]
+fn redirect_home(cookies: &Cookies) -> Result<Template, Redirect> {
+    if let Some(user_id) = get_id_from_session(&cookies) {
+        let user: User = User::get(user_id);
+        let folders: Vec<Folder> = (&user).get_folders();
+        if folders.len() == 0 {
+            return Ok(Template::render("dashboard_folder", &Context::folder_view(user_id, None)))
+        }
+        let ref folder_name = folders[0].name;
+        Err(Redirect::to(&format!("/home/{}", folder_name)))
+    } else {
+        Err(Redirect::to("/login"))
+    }
+}
+
 #[get("/<folder_name>")]
 fn show_folder(cookies: &Cookies, folder_name: &str) -> Result<Template, Redirect> {
     if let Some(user_id) = get_id_from_session(&cookies) {
-        Ok(Template::render("dashboard_folder", &Context::folder_view(user_id, folder_name.to_string())))
+        Ok(Template::render("dashboard_folder", &Context::folder_view(user_id, Some(folder_name.to_string()))))
     } else {
         Err(Redirect::to("/login"))
+    }
+}
+
+#[post("/<folder_name>", data = "<document_form>")]
+fn add_document(cookies: &Cookies, document_form: Form<DocumentForm>, folder_name: &str) -> Redirect {
+    if let Some(user_id) = get_id_from_session(&cookies) {
+        let document_new = document_form.into_inner();
+        let user = User::get(user_id);
+        user.new_document(String::from(folder_name), document_new);
+        Redirect::to(["/home/", &folder_name].join("").as_str())
+
+    } else {
+        Redirect::to("/login")
     }
 }
 
@@ -105,12 +137,13 @@ fn show_document(cookies: &Cookies, folder_name: &str, document_name: &str) -> R
     }
 }
 
-/*#[post("/", data="<folder_new>")]
-fn new_folder(cookies: &Cookies, folder_new: Form<FolderNew>) -> Redirect {
-    if let Ok(user_id) = get_id_from_session(&cookies) {
+#[post("/", data="<folder_form>")]
+fn new_folder(cookies: &Cookies, folder_form: Form<FolderForm>) -> Redirect {
+    if let Some(user_id) = get_id_from_session(&cookies) {
         let user: User = User::get(user_id);
-        if user.new_folder(folder_new) {
-            Redirect::to("/")
+        let folder_new: FolderForm = folder_form.into_inner();
+        if user.new_folder(&folder_new.folder_name) {
+            Redirect::to(["/home/", &folder_new.folder_name].join("").as_str())
         }
         else {
             Redirect::to("/")
@@ -119,7 +152,7 @@ fn new_folder(cookies: &Cookies, folder_new: Form<FolderNew>) -> Redirect {
     } else {
         Redirect::to("/login")
     }
-}*/
+}
 
 #[get("/")]
 fn show_profile(cookies: &Cookies) -> Result<Template, Redirect> {
@@ -136,7 +169,6 @@ fn update_profile(cookies: &Cookies, user_updated: Form<UserNew>) -> Redirect {
         let user_updated = user_updated.into_inner();
         let mut user = User::get(user_id);
         //TODO:validation
-        println!("router user_name: {:?}", user_updated.name);
         user.update_profile(user_updated);
         Redirect::to("/")
     } else {
@@ -151,8 +183,8 @@ fn not_found(req: &rocket::Request) -> String {
 
 fn main() {
     rocket::ignite().mount("/",         routes![dashboard_redirect, static_files::all])
-                    .mount("/home",     routes![show_folder, show_document])
-                    //.mount("/new",    routes![new_folder])
+                    .mount("/home",     routes![redirect_home, add_document, show_folder, show_document])
+                    .mount("/new",      routes![new_folder])
                     .mount("/login",    routes![login, show_login])
                     .mount("/logout",   routes![logout])
                     .mount("/register", routes![register, show_register])
